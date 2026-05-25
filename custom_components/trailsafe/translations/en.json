@@ -1,0 +1,22 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Trailsafe",
+        "description": "Enter your Trailsafe server URL and API key. You can create an API key in the Trailsafe dashboard under Integrations.",
+        "data": {
+          "server_url": "Server URL",
+          "api_key": "API Key"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to the Trailsafe server.",
+      "invalid_auth": "Invalid API key. Generate one in the Trailsafe dashboard.",
+      "paid_plan_required": "API keys require a paid Trailsafe plan (Single or Family)."
+    },
+    "abort": {
+      "already_configured": "This API key is already configured."
+    }
+  }
+}
