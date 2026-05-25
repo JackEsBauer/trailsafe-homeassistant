@@ -1,0 +1,12 @@
+{
+  "domain": "trailsafe",
+  "name": "Trailsafe GPS Tracker",
+  "codeowners": ["@2555"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/2555/trailsafe-homeassistant",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/2555/trailsafe-homeassistant/issues",
+  "requirements": ["aiohttp>=3.8.0"],
+  "version": "1.0.0"
+}
