@@ -48,9 +48,9 @@ class TrailsafeCoordinator(DataUpdateCoordinator):
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=15)) as resp:
                     if resp.status == 401:
-                        raise UpdateFailed("Invalid API key — check your Trailsafe dashboard")
+                        raise UpdateFailed("Invalid API key — check your Trail-Safe dashboard")
                     if resp.status == 403:
-                        raise UpdateFailed("API key requires a paid Trailsafe plan")
+                        raise UpdateFailed("API key requires a paid Trail-Safe plan")
                     if resp.status != 200:
                         raise UpdateFailed(f"Server returned {resp.status}")
                     data = await resp.json()
