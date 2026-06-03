@@ -15,9 +15,11 @@ A Home Assistant custom integration that brings live GPS positions from
 family member appears as a `device_tracker` entity with real-time
 coordinates, accuracy, online state, and SOS alerts.
 
+<!-- TODO: capture from a live Home Assistant instance, then uncomment.
 <p align="center">
   <img src="images/map-preview.png" alt="Trail-Safe trackers on the Home Assistant map" width="700">
 </p>
+-->
 
 ## Features
 
@@ -73,9 +75,11 @@ coordinates, accuracy, online state, and SOS alerts.
 5. Click **Submit** — the integration validates the key and shows your
    plan and member count.
 
+<!-- TODO: capture from a live Home Assistant instance, then uncomment.
 <p align="center">
   <img src="images/config-flow.png" alt="Trail-Safe integration setup dialog" width="450">
 </p>
+-->
 
 ## Entities
 
@@ -129,9 +133,11 @@ location, including your Trail-Safe trackers. Each member appears with an
 accuracy circle and, if an avatar was uploaded in Trail-Safe, their photo
 as the marker.
 
+<!-- TODO: capture from a live Home Assistant instance, then uncomment.
 <p align="center">
   <img src="images/map-card.png" alt="Trail-Safe map card on a dashboard" width="700">
 </p>
+-->
 
 ### Map card on a dashboard
 
