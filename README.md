@@ -1,12 +1,23 @@
-# Trailsafe GPS Tracker for Home Assistant
+<p align="center">
+  <img src="images/logo.png" alt="Trailsafe" width="160">
+</p>
 
-[![HACS](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+<h1 align="center">Trailsafe GPS Tracker for Home Assistant</h1>
+
+<p align="center">
+  <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Default-41BDF5.svg" alt="HACS"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
+  <a href="https://trail-safe.app"><img src="https://img.shields.io/badge/Trailsafe-trail--safe.app-2E7D32.svg" alt="Trailsafe"></a>
+</p>
 
 A Home Assistant custom integration that brings live GPS positions from
 [Trailsafe](https://trail-safe.app) onto your Home Assistant map. Each
 family member appears as a `device_tracker` entity with real-time
 coordinates, accuracy, online state, and SOS alerts.
+
+<p align="center">
+  <img src="images/map-preview.png" alt="Trailsafe trackers on the Home Assistant map" width="700">
+</p>
 
 ## Features
 
@@ -62,6 +73,10 @@ coordinates, accuracy, online state, and SOS alerts.
 5. Click **Submit** — the integration validates the key and shows your
    plan and member count.
 
+<p align="center">
+  <img src="images/config-flow.png" alt="Trailsafe integration setup dialog" width="450">
+</p>
+
 ## Entities
 
 For each user in your Trailsafe account, a `device_tracker` entity is
@@ -97,6 +112,10 @@ The built-in **Map** panel (left sidebar) shows every entity that has a
 location, including your Trailsafe trackers. Each member appears with an
 accuracy circle and, if an avatar was uploaded in Trailsafe, their photo
 as the marker.
+
+<p align="center">
+  <img src="images/map-card.png" alt="Trailsafe map card on a dashboard" width="700">
+</p>
 
 ### Map card on a dashboard
 
