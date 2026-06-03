@@ -85,6 +85,51 @@ created:
 | `sos`          | boolean | True when the watch is signalling SOS       |
 | `recorded_at`  | integer | Unix milliseconds of the last GPS fix       |
 
+## Showing trackers on the map
+
+Because every entity is a `device_tracker` with `source_type: gps` and
+live `latitude`/`longitude`, Home Assistant places it on the map
+automatically — no extra configuration is required.
+
+### Default map
+
+The built-in **Map** panel (left sidebar) shows every entity that has a
+location, including your Trailsafe trackers. Each member appears with an
+accuracy circle and, if an avatar was uploaded in Trailsafe, their photo
+as the marker.
+
+### Map card on a dashboard
+
+To add the trackers to a specific dashboard:
+
+1. Open the dashboard and click **Edit Dashboard** (top-right).
+2. Click **+ Add Card** and choose **Map**.
+3. Under **Entities**, add your Trailsafe trackers, e.g.
+   `device_tracker.trailsafe_116658255524685545000`.
+4. Click **Save**.
+
+Or paste the YAML directly:
+
+```yaml
+type: map
+title: Trailsafe
+default_zoom: 12
+hours_to_show: 6
+entities:
+  - device_tracker.trailsafe_116658255524685545000
+  - device_tracker.trailsafe_103847562918374650000
+```
+
+> **Tip:** Set `hours_to_show` to draw a recent location history trail
+> for each member. Use `default_zoom` to frame your usual area.
+
+### Not seeing a marker?
+
+- The entity must have a GPS fix — if `latitude`/`longitude` are
+  `unknown`, the watch hasn't reported a position yet.
+- Confirm the entity isn't hidden under
+  **Settings > Devices & Services > Entities**.
+
 ## Example automations
 
 ### Alert when a hiker goes offline
