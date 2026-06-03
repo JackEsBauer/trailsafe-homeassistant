@@ -9,7 +9,7 @@ from homeassistant.data_entry_flow import FlowResult
 from .const import DOMAIN, CONF_SERVER_URL, CONF_API_KEY
 
 DATA_SCHEMA = vol.Schema({
-    vol.Required(CONF_SERVER_URL, default="https://trailsafe.app"): str,
+    vol.Required(CONF_SERVER_URL, default="https://trail-safe.app"): str,
     vol.Required(CONF_API_KEY): str,
 })
 

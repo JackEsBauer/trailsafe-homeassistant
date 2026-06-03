@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 A Home Assistant custom integration that brings live GPS positions from
-[Trailsafe](https://trailsafe.app) onto your Home Assistant map. Each
+[Trailsafe](https://trail-safe.app) onto your Home Assistant map. Each
 family member appears as a `device_tracker` entity with real-time
 coordinates, accuracy, online state, and SOS alerts.
 
@@ -48,7 +48,7 @@ coordinates, accuracy, online state, and SOS alerts.
 
 ### 1. Create an API key
 
-1. Sign in to the [Trailsafe dashboard](https://trailsafe.app).
+1. Sign in to the [Trailsafe dashboard](https://trail-safe.app).
 2. Switch to the **Integrations** tab (requires a paid plan).
 3. Click **Create key**, give it a name, and copy the token.
 4. The token starts with `ts_` and is shown only once.
@@ -57,7 +57,7 @@ coordinates, accuracy, online state, and SOS alerts.
 
 1. In Home Assistant, go to **Settings > Devices & Services**.
 2. Click **Add Integration** and search for **Trailsafe**.
-3. Enter your **Server URL** (e.g. `https://trailsafe.app`).
+3. Enter your **Server URL** (e.g. `https://trail-safe.app`).
 4. Paste your **API Key**.
 5. Click **Submit** — the integration validates the key and shows your
    plan and member count.
