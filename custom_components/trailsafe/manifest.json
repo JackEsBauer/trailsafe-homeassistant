@@ -1,6 +1,6 @@
 {
   "domain": "trailsafe",
-  "name": "Trailsafe GPS Tracker",
+  "name": "Trail-Safe GPS Tracker",
   "codeowners": ["@JackEsBauer"],
   "config_flow": true,
   "dependencies": [],

@@ -45,7 +45,7 @@ class TrailsafeConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                             self._abort_if_unique_id_configured()
 
                             return self.async_create_entry(
-                                title=f"Trailsafe ({plan}, {count} members)",
+                                title=f"Trail-Safe ({plan}, {count} members)",
                                 data={
                                     CONF_SERVER_URL: server_url,
                                     CONF_API_KEY: api_key,

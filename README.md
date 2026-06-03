@@ -1,22 +1,22 @@
 <p align="center">
-  <img src="images/logo.png" alt="Trailsafe" width="160">
+  <img src="images/logo.png" alt="Trail-Safe" width="160">
 </p>
 
-<h1 align="center">Trailsafe GPS Tracker for Home Assistant</h1>
+<h1 align="center">Trail-Safe GPS Tracker for Home Assistant</h1>
 
 <p align="center">
   <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Default-41BDF5.svg" alt="HACS"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
-  <a href="https://trail-safe.app"><img src="https://img.shields.io/badge/Trailsafe-trail--safe.app-2E7D32.svg" alt="Trailsafe"></a>
+  <a href="https://trail-safe.app"><img src="https://img.shields.io/badge/Trail--Safe-trail--safe.app-2E7D32.svg" alt="Trail-Safe"></a>
 </p>
 
 A Home Assistant custom integration that brings live GPS positions from
-[Trailsafe](https://trail-safe.app) onto your Home Assistant map. Each
+[Trail-Safe](https://trail-safe.app) onto your Home Assistant map. Each
 family member appears as a `device_tracker` entity with real-time
 coordinates, accuracy, online state, and SOS alerts.
 
 <p align="center">
-  <img src="images/map-preview.png" alt="Trailsafe trackers on the Home Assistant map" width="700">
+  <img src="images/map-preview.png" alt="Trail-Safe trackers on the Home Assistant map" width="700">
 </p>
 
 ## Features
@@ -34,7 +34,7 @@ coordinates, accuracy, online state, and SOS alerts.
 | Requirement      | Value                                    |
 |------------------|------------------------------------------|
 | Home Assistant   | 2024.1.0 or later                        |
-| Trailsafe plan   | Single or Family (Free is not supported) |
+| Trail-Safe plan   | Single or Family (Free is not supported) |
 | HACS             | Installed and running                    |
 
 ## Installation
@@ -44,7 +44,7 @@ coordinates, accuracy, online state, and SOS alerts.
 1. Open **HACS** in your Home Assistant.
 2. Go to **Integrations**.
 3. Click **Explore & Download Repositories**.
-4. Search for **Trailsafe GPS Tracker**.
+4. Search for **Trail-Safe GPS Tracker**.
 5. Click **Download**.
 6. Restart Home Assistant.
 
@@ -59,7 +59,7 @@ coordinates, accuracy, online state, and SOS alerts.
 
 ### 1. Create an API key
 
-1. Sign in to the [Trailsafe dashboard](https://trail-safe.app).
+1. Sign in to the [Trail-Safe dashboard](https://trail-safe.app).
 2. Switch to the **Integrations** tab (requires a paid plan).
 3. Click **Create key**, give it a name, and copy the token.
 4. The token starts with `ts_` and is shown only once.
@@ -67,19 +67,19 @@ coordinates, accuracy, online state, and SOS alerts.
 ### 2. Add the integration
 
 1. In Home Assistant, go to **Settings > Devices & Services**.
-2. Click **Add Integration** and search for **Trailsafe**.
+2. Click **Add Integration** and search for **Trail-Safe**.
 3. Enter your **Server URL** (e.g. `https://trail-safe.app`).
 4. Paste your **API Key**.
 5. Click **Submit** — the integration validates the key and shows your
    plan and member count.
 
 <p align="center">
-  <img src="images/config-flow.png" alt="Trailsafe integration setup dialog" width="450">
+  <img src="images/config-flow.png" alt="Trail-Safe integration setup dialog" width="450">
 </p>
 
 ## Entities
 
-A `device_tracker` entity is created **per device**. Because a Trailsafe
+A `device_tracker` entity is created **per device**. Because a Trail-Safe
 member can carry several devices (a Family plan covers up to four devices,
 which may all belong to one person), every device gets its own tracker.
 All of a member's devices are grouped under a single Home Assistant device
@@ -98,7 +98,7 @@ Each entity exposes:
 | `gps_accuracy`     | Accuracy in meters                               |
 | `source_type`      | Always `gps`                                     |
 | `icon`             | `mdi:walk` (online), `mdi:account-clock` (offline), `mdi:alert` (SOS) |
-| `entity_picture`   | Avatar URL (if uploaded in Trailsafe)            |
+| `entity_picture`   | Avatar URL (if uploaded in Trail-Safe)            |
 
 ### Extra state attributes
 
@@ -106,7 +106,7 @@ Each entity exposes:
 |----------------|---------|---------------------------------------------|
 | `user_sub`     | string  | Google account subject identifier of the owner |
 | `device_id`    | string  | Identifier of this specific device (per-device trackers only) |
-| `device_name`  | string  | This device's name from Trailsafe           |
+| `device_name`  | string  | This device's name from Trail-Safe           |
 | `online`       | boolean | True when this device has an active connection |
 | `sos`          | boolean | True when the owner is signalling SOS       |
 | `recorded_at`  | integer | Unix milliseconds of the last GPS fix       |
@@ -125,12 +125,12 @@ automatically — no extra configuration is required.
 ### Default map
 
 The built-in **Map** panel (left sidebar) shows every entity that has a
-location, including your Trailsafe trackers. Each member appears with an
-accuracy circle and, if an avatar was uploaded in Trailsafe, their photo
+location, including your Trail-Safe trackers. Each member appears with an
+accuracy circle and, if an avatar was uploaded in Trail-Safe, their photo
 as the marker.
 
 <p align="center">
-  <img src="images/map-card.png" alt="Trailsafe map card on a dashboard" width="700">
+  <img src="images/map-card.png" alt="Trail-Safe map card on a dashboard" width="700">
 </p>
 
 ### Map card on a dashboard
@@ -139,7 +139,7 @@ To add the trackers to a specific dashboard:
 
 1. Open the dashboard and click **Edit Dashboard** (top-right).
 2. Click **+ Add Card** and choose **Map**.
-3. Under **Entities**, add your Trailsafe trackers, e.g.
+3. Under **Entities**, add your Trail-Safe trackers, e.g.
    `device_tracker.trailsafe_116658255524685545000`.
 4. Click **Save**.
 
@@ -147,7 +147,7 @@ Or paste the YAML directly:
 
 ```yaml
 type: map
-title: Trailsafe
+title: Trail-Safe
 default_zoom: 12
 hours_to_show: 6
 entities:
@@ -180,7 +180,7 @@ automation:
     action:
       - service: notify.mobile_app
         data:
-          title: "Trailsafe"
+          title: "Trail-Safe"
           message: >
             {{ state_attr('device_tracker.trailsafe_116658255524685545000',
                'friendly_name') }} went offline 5 minutes ago.
@@ -199,7 +199,7 @@ automation:
     action:
       - service: notify.all_phones
         data:
-          title: "SOS from Trailsafe"
+          title: "SOS from Trail-Safe"
           message: "Emergency signal received. Check the map."
 ```
 

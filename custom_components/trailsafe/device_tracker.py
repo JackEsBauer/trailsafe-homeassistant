@@ -71,7 +71,7 @@ class TrailsafeTracker(CoordinatorEntity, TrackerEntity):
         return DeviceInfo(
             identifiers={(DOMAIN, self._user_sub)},
             name=d.get("display_name") or self._user_sub,
-            manufacturer="Trailsafe",
+            manufacturer="Trail-Safe",
         )
 
     @property
