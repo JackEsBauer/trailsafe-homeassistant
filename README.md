@@ -79,8 +79,17 @@ coordinates, accuracy, online state, and SOS alerts.
 
 ## Entities
 
-For each user in your Trailsafe account, a `device_tracker` entity is
-created:
+A `device_tracker` entity is created **per device**. Because a Trailsafe
+member can carry several devices (a Family plan covers up to four devices,
+which may all belong to one person), every device gets its own tracker.
+All of a member's devices are grouped under a single Home Assistant device
+named after that member, so a member with three watches shows up as one
+device holding three trackers (e.g. *Sander – Watch*, *Sander – Phone*).
+
+Members who haven't reported a live device fix yet appear as a single
+fallback tracker keyed by their account, so nobody drops off the map.
+
+Each entity exposes:
 
 | Attribute          | Description                                      |
 |--------------------|--------------------------------------------------|
@@ -95,10 +104,17 @@ created:
 
 | Attribute      | Type    | Description                                 |
 |----------------|---------|---------------------------------------------|
-| `user_sub`     | string  | Google account subject identifier           |
-| `online`       | boolean | True when any device has an active connection |
-| `sos`          | boolean | True when the watch is signalling SOS       |
+| `user_sub`     | string  | Google account subject identifier of the owner |
+| `device_id`    | string  | Identifier of this specific device (per-device trackers only) |
+| `device_name`  | string  | This device's name from Trailsafe           |
+| `online`       | boolean | True when this device has an active connection |
+| `sos`          | boolean | True when the owner is signalling SOS       |
 | `recorded_at`  | integer | Unix milliseconds of the last GPS fix       |
+
+> **Upgrading from 1.0.x:** entities are now keyed per device. A member
+> with a live device fix moves from `device_tracker.trailsafe_<user_sub>`
+> to `device_tracker.trailsafe_<device_id>`. Update any dashboards or
+> automations that referenced the old per-user entity IDs.
 
 ## Showing trackers on the map
 
