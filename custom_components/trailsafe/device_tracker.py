@@ -2,13 +2,14 @@
 
 import logging
 
-from homeassistant.components.device_tracker import SourceType
+from homeassistant.components.device_tracker import ENTITY_ID_FORMAT, SourceType
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import slugify
 
 from .const import DOMAIN
 from .coordinator import TrailsafeCoordinator
@@ -58,6 +59,19 @@ class TrailsafeTracker(CoordinatorEntity, TrackerEntity):
         # stays stable even if the entry later drops out of the feed.
         d = coordinator.data.get(key) or {}
         self._user_sub = d.get("user_sub") or key
+
+        # Build a readable, stable entity_id of the form
+        # ``device_tracker.trailsafe_<account>_<device>`` rather than letting
+        # HA derive it from the (often email-shaped) display name. The account
+        # part strips any email domain; the device part uses the friendly
+        # device name, falling back to a short id slice for the per-user row.
+        account = (d.get("display_name") or self._user_sub).split("@", 1)[0]
+        device_label = d.get("device_name")
+        if not device_label and d.get("device_id"):
+            device_label = d["device_id"][:6]
+        parts = [slugify(p) for p in ("trailsafe", account, device_label or "")]
+        object_id = "_".join(p for p in parts if p)
+        self.entity_id = ENTITY_ID_FORMAT.format(object_id)
 
     @property
     def _data(self) -> dict | None:
