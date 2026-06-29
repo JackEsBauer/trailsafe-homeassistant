@@ -23,7 +23,8 @@ coordinates, accuracy, online state, and SOS alerts.
 
 ## Features
 
-- One `device_tracker` entity per family member (or single user)
+- One `device_tracker` entity per device, grouped under a device per member
+- Readable entity IDs: `device_tracker.trailsafe_<account>_<device>`
 - GPS coordinates with accuracy circle on the HA map
 - Online/offline state with automatic icon changes
 - SOS alert detection (icon switches to `mdi:alert`)
@@ -93,6 +94,26 @@ device holding three trackers (e.g. *Sander – Watch*, *Sander – Phone*).
 Members who haven't reported a live device fix yet appear as a single
 fallback tracker keyed by their account, so nobody drops off the map.
 
+### Entity IDs
+
+Each tracker's entity ID follows the pattern:
+
+```
+device_tracker.trailsafe_<account>_<device>
+```
+
+For example `device_tracker.trailsafe_sander_ultra_1`. The `<account>`
+part is your Trail-Safe display name with any email domain stripped, and
+`<device>` is the device's friendly name from Trail-Safe (the per-user
+fallback tracker omits the device part). Rename a device in the Trail-Safe
+app to change the `<device>` part — for example, rename a watch that
+reports a raw model code like `L705F` to something friendly.
+
+> The entity ID is assigned when an entity is first created. Existing
+> entities keep their old ID, so to adopt the new scheme on an existing
+> install, remove and re-add the integration (or rename entities under
+> **Settings > Devices & Services > Entities**).
+
 Each entity exposes:
 
 | Attribute          | Description                                      |
@@ -115,10 +136,12 @@ Each entity exposes:
 | `sos`          | boolean | True when the owner is signalling SOS       |
 | `recorded_at`  | integer | Unix milliseconds of the last GPS fix       |
 
-> **Upgrading from 1.0.x:** entities are now keyed per device. A member
-> with a live device fix moves from `device_tracker.trailsafe_<user_sub>`
-> to `device_tracker.trailsafe_<device_id>`. Update any dashboards or
-> automations that referenced the old per-user entity IDs.
+> **Upgrading:** entity IDs changed across the 1.1.x line. They are now
+> keyed per device and use the readable `device_tracker.trailsafe_<account>_<device>`
+> form (earlier builds used `device_tracker.trailsafe_<user_sub>` or the
+> raw `<device_id>`). Existing entities keep their old IDs until you
+> re-add the integration; update any dashboards or automations that
+> referenced the old IDs.
 
 ## Showing trackers on the map
 
@@ -146,7 +169,7 @@ To add the trackers to a specific dashboard:
 1. Open the dashboard and click **Edit Dashboard** (top-right).
 2. Click **+ Add Card** and choose **Map**.
 3. Under **Entities**, add your Trail-Safe trackers, e.g.
-   `device_tracker.trailsafe_116658255524685545000`.
+   `device_tracker.trailsafe_sander_ultra_1`.
 4. Click **Save**.
 
 Or paste the YAML directly:
@@ -157,8 +180,8 @@ title: Trail-Safe
 default_zoom: 12
 hours_to_show: 6
 entities:
-  - device_tracker.trailsafe_116658255524685545000
-  - device_tracker.trailsafe_103847562918374650000
+  - device_tracker.trailsafe_sander_ultra_1
+  - device_tracker.trailsafe_emma_phone
 ```
 
 > **Tip:** Set `hours_to_show` to draw a recent location history trail
@@ -180,7 +203,7 @@ automation:
   - alias: "Hiker offline alert"
     trigger:
       - platform: state
-        entity_id: device_tracker.trailsafe_116658255524685545000
+        entity_id: device_tracker.trailsafe_sander_ultra_1
         to: "not_home"
         for: "00:05:00"
     action:
@@ -188,7 +211,7 @@ automation:
         data:
           title: "Trail-Safe"
           message: >
-            {{ state_attr('device_tracker.trailsafe_116658255524685545000',
+            {{ state_attr('device_tracker.trailsafe_sander_ultra_1',
                'friendly_name') }} went offline 5 minutes ago.
 ```
 
@@ -199,7 +222,7 @@ automation:
   - alias: "SOS alert"
     trigger:
       - platform: state
-        entity_id: device_tracker.trailsafe_116658255524685545000
+        entity_id: device_tracker.trailsafe_sander_ultra_1
         attribute: sos
         to: true
     action:
