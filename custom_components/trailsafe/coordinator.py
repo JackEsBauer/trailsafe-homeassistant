@@ -63,6 +63,13 @@ class TrailsafeCoordinator(DataUpdateCoordinator):
             if not sub:
                 continue
             device_id = p.get("device_id")
+            # The backend's per-user fallback row carries a synthetic
+            # ``user:<sub>`` device id (for clients that connect without their
+            # own device id). Treat that as the legacy per-user entry: drop the
+            # device id so the tracker keeps its stable ``user_sub`` identity
+            # and entity id, rather than spawning a new colon-laden one.
+            if device_id == f"user:{sub}":
+                device_id = None
             # Key by device so a user with several devices yields several
             # trackers. The per-user fallback entry (no device_id) keeps the
             # user_sub key, preserving the legacy entity for that member.
