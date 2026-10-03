@@ -31,6 +31,7 @@ coordinates, accuracy, online state, and SOS alerts.
 - Asks for a new API key when the old one is revoked (no reinstall needed)
 - Repair notice when the account's plan no longer includes the API
 - Trackers of removed devices go unavailable and are cleaned up after 24h
+- Member avatars as map markers and entity pictures
 - 30-second polling interval
 - Config flow UI (no YAML needed)
 
@@ -125,6 +126,7 @@ Each entity exposes:
 | `gps_accuracy`     | Accuracy in meters                               |
 | `source_type`      | Always `gps`                                     |
 | `icon`             | `mdi:walk` (online), `mdi:account-clock` (offline), `mdi:alert` (SOS) |
+| `entity_picture`   | The member's avatar (if uploaded in PaceGuard); used as the map marker |
 
 ### Extra state attributes
 
@@ -254,6 +256,9 @@ automation:
 
 ## Changelog
 
+- **1.3.0**: member avatars are back as entity pictures and map markers.
+  Home Assistant fetches them from PaceGuard with the API key (it never
+  reaches the browser) and serves them on a signed path behind its own auth.
 - **1.2.0**: reauth flow when the API key is revoked (401) and a repair
   issue when the plan lapses (403), instead of silent failures. Trackers of
   devices that left the feed go unavailable and are removed after 24h. Two

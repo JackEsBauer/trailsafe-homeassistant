@@ -93,7 +93,7 @@ Check all of these:
    **Ask the user before pushing to GitHub**: it is public.
 
 ## Known open items
-- Avatars: the backend should accept the integration API key on the avatar
+- Avatars: done in 1.3.0 (backend accepts the API key on the avatar routes, backend MR !65; HA proxies them via avatar.py with signed paths).
   route, or the integration should proxy the avatar.
 - Possible extra entities: battery / speed / online as sensors, if the feed
   starts carrying them (the backend has them per frame, but not in this feed).

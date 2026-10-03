@@ -11,6 +11,7 @@ from homeassistant.components.device_tracker import (
     TrackerEntity,
 )
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.components.http.auth import async_sign_path
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -18,6 +19,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util, slugify
 
 from . import TrailsafeConfigEntry
+from .avatar import avatar_path
 from .const import DOMAIN
 from .coordinator import TrailsafeCoordinator
 
@@ -28,6 +30,13 @@ _LOGGER = logging.getLogger(__name__)
 # entity registry, so dead trackers don't pile up. Only counted while the
 # feed itself is non-empty, so a blank or failed poll never deletes anything.
 STALE_AFTER = timedelta(hours=24)
+
+# The map marker / entity picture is a signed Home Assistant path to the
+# avatar view (the browser can't send the PaceGuard API key). Signed for a
+# week and re-signed when a day is left, so the attribute changes about once
+# a week instead of on every poll.
+AVATAR_SIGN_FOR = timedelta(days=7)
+AVATAR_RESIGN_BEFORE = timedelta(days=1)
 
 
 async def async_setup_entry(
@@ -103,6 +112,7 @@ class TrailsafeTracker(CoordinatorEntity[TrailsafeCoordinator], TrackerEntity):
         d = coordinator.data.get(key) or {}
         self._user_sub = d.get("user_sub") or key
         self._display_name = d.get("display_name") or self._user_sub
+        self._picture: tuple[str, object] | None = None  # (signed url, expires)
 
         # Build a readable, stable entity_id of the form
         # ``device_tracker.trailsafe_<account>_<device>`` rather than letting
@@ -204,6 +214,22 @@ class TrailsafeTracker(CoordinatorEntity[TrailsafeCoordinator], TrackerEntity):
         if d.get("recorded_at"):
             attrs["recorded_at"] = d["recorded_at"]
         return attrs
+
+    @property
+    def entity_picture(self) -> str | None:
+        d = self._data
+        if not d or not d.get("avatar_url"):
+            self._picture = None
+            return None
+        now = dt_util.utcnow()
+        if self._picture is None or self._picture[1] - now < AVATAR_RESIGN_BEFORE:
+            url = async_sign_path(
+                self.hass,
+                avatar_path(self.coordinator.config_entry.entry_id, self._user_sub),
+                AVATAR_SIGN_FOR,
+            )
+            self._picture = (url, now + AVATAR_SIGN_FOR)
+        return self._picture[0]
 
 
 def _name_is_shared(coordinator: TrailsafeCoordinator, key: str, d: dict) -> bool:
