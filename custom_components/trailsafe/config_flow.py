@@ -1,4 +1,4 @@
-"""Config flow for Trailsafe integration."""
+"""Config flow for PaceGuard integration."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .const import CONF_API_KEY, CONF_SERVER_URL, DOMAIN
 
 DATA_SCHEMA = vol.Schema({
-    vol.Required(CONF_SERVER_URL, default="https://trail-safe.app"): str,
+    vol.Required(CONF_SERVER_URL, default="https://paceguard.io"): str,
     vol.Required(CONF_API_KEY): str,
 })
 
@@ -43,9 +43,12 @@ async def _probe(hass: HomeAssistant, server_url: str, api_key: str) -> tuple[st
 
 
 class TrailsafeConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Trailsafe."""
+    """Handle a config flow for PaceGuard."""
 
     VERSION = 1
+    # 1.2: server URL moved from the Trail-Safe hosts to paceguard.io
+    # (see async_migrate_entry).
+    MINOR_VERSION = 2
 
     async def async_step_user(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         errors: dict[str, str] = {}
@@ -64,7 +67,7 @@ class TrailsafeConfigFlow(ConfigFlow, domain=DOMAIN):
                 self._abort_if_unique_id_configured()
 
                 return self.async_create_entry(
-                    title=f"Trail-Safe ({plan}, {count} members)",
+                    title=f"PaceGuard ({plan}, {count} members)",
                     data={CONF_SERVER_URL: server_url, CONF_API_KEY: api_key},
                 )
 

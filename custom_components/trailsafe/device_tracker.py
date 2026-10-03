@@ -1,4 +1,4 @@
-"""Device tracker platform for Trailsafe."""
+"""Device tracker platform for PaceGuard."""
 
 from __future__ import annotations
 
@@ -66,7 +66,7 @@ async def async_setup_entry(
                 "device_tracker", DOMAIN, f"trailsafe_{key}"
             )
             if entity_id:
-                _LOGGER.info("Removing %s: gone from the Trail-Safe feed for %s", entity_id, STALE_AFTER)
+                _LOGGER.info("Removing %s: gone from the PaceGuard feed for %s", entity_id, STALE_AFTER)
                 registry.async_remove(entity_id)
             tracked.discard(key)
             missing_since.pop(key, None)
@@ -84,7 +84,7 @@ async def async_setup_entry(
 
 
 class TrailsafeTracker(CoordinatorEntity[TrailsafeCoordinator], TrackerEntity):
-    """Represents one Trailsafe device on the map.
+    """Represents one PaceGuard device on the map.
 
     Entities are keyed per device. All devices owned by the same user are
     grouped under a single Home Assistant device (named after the user) via
@@ -139,7 +139,7 @@ class TrailsafeTracker(CoordinatorEntity[TrailsafeCoordinator], TrackerEntity):
         return DeviceInfo(
             identifiers={(DOMAIN, self._user_sub)},
             name=d.get("display_name") or self._display_name,
-            manufacturer="Trail-Safe",
+            manufacturer="PaceGuard",
         )
 
     @property

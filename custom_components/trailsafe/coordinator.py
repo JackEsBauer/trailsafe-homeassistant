@@ -1,4 +1,4 @@
-"""Data update coordinator for Trailsafe."""
+"""Data update coordinator for PaceGuard."""
 
 from __future__ import annotations
 
@@ -65,7 +65,7 @@ class TrailsafeCoordinator(DataUpdateCoordinator[dict[str, dict]]):
                     # Revoked or invalid key: let Home Assistant ask for a new
                     # one (reauth flow) instead of failing silently forever.
                     raise ConfigEntryAuthFailed(
-                        "The Trail-Safe API key is no longer valid"
+                        "The PaceGuard API key is no longer valid"
                     )
                 if resp.status == 403:
                     # The key is fine but the owner's plan no longer includes
@@ -81,9 +81,9 @@ class TrailsafeCoordinator(DataUpdateCoordinator[dict[str, dict]]):
                         translation_key=ISSUE_PAID_PLAN,
                         translation_placeholders={"title": self.config_entry.title},
                     )
-                    raise UpdateFailed("The Trail-Safe plan no longer includes API access")
+                    raise UpdateFailed("The PaceGuard plan no longer includes API access")
                 if resp.status != 200:
-                    raise UpdateFailed(f"Trail-Safe server returned {resp.status}")
+                    raise UpdateFailed(f"PaceGuard server returned {resp.status}")
                 data = await resp.json()
         except (aiohttp.ClientError, TimeoutError) as err:
             raise UpdateFailed(f"Connection error: {err}") from err

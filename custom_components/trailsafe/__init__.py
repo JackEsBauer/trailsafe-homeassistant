@@ -1,4 +1,4 @@
-"""Trailsafe GPS Tracker integration for Home Assistant."""
+"""PaceGuard GPS Tracker integration for Home Assistant."""
 
 from __future__ import annotations
 
@@ -9,12 +9,34 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 
-from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
+from .const import CONF_SERVER_URL, DEFAULT_SCAN_INTERVAL, DOMAIN
 from .coordinator import TrailsafeCoordinator
 
 PLATFORMS = [Platform.DEVICE_TRACKER]
 
+# The service is PaceGuard now; these older hostnames reach the same backend
+# (same accounts and API keys), so existing entries are moved over.
+LEGACY_SERVER_URLS = {
+    "https://trail-safe.app",
+    "https://www.trail-safe.app",
+    "https://api.trailsafe.nl",
+}
+SERVER_URL = "https://paceguard.io"
+
 type TrailsafeConfigEntry = ConfigEntry[TrailsafeCoordinator]
+
+
+async def async_migrate_entry(hass: HomeAssistant, entry: TrailsafeConfigEntry) -> bool:
+    """1.1 → 1.2: point entries at paceguard.io instead of the Trail-Safe hosts."""
+    if entry.version > 1:
+        return False  # downgrade from a future major version
+    if entry.minor_version < 2:
+        data = dict(entry.data)
+        if data.get(CONF_SERVER_URL, "").rstrip("/") in LEGACY_SERVER_URLS:
+            data[CONF_SERVER_URL] = SERVER_URL
+        title = entry.title.replace("Trail-Safe", "PaceGuard")
+        hass.config_entries.async_update_entry(entry, data=data, title=title, minor_version=2)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: TrailsafeConfigEntry) -> bool:

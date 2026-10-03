@@ -1,7 +1,7 @@
-# Agent instructions: Trail-Safe Home Assistant integration
+# Agent instructions: PaceGuard Home Assistant integration
 
-Custom integration `trailsafe` (HACS): one `device_tracker` per Trail-Safe
-device, polled from the Trail-Safe backend with a user API key.
+Custom integration `trailsafe` (HACS): one `device_tracker` per PaceGuard
+device, polled from the PaceGuard backend with a user API key.
 
 ## Where things live
 - **This repo is the source of truth**: `custom_components/trailsafe/`.
