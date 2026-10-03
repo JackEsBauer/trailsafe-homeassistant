@@ -1,23 +1,23 @@
 <p align="center">
-  <img src="images/logo.png" alt="Trail-Safe" width="160">
+  <img src="images/logo.png" alt="PaceGuard" width="160">
 </p>
 
-<h1 align="center">Trail-Safe GPS Tracker for Home Assistant</h1>
+<h1 align="center">PaceGuard GPS Tracker for Home Assistant</h1>
 
 <p align="center">
   <a href="https://github.com/hacs/integration"><img src="https://img.shields.io/badge/HACS-Default-41BDF5.svg" alt="HACS"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License"></a>
-  <a href="https://trail-safe.app"><img src="https://img.shields.io/badge/Trail--Safe-trail--safe.app-2E7D32.svg" alt="Trail-Safe"></a>
+  <a href="https://paceguard.io"><img src="https://img.shields.io/badge/PaceGuard-paceguard.io-2E7D32.svg" alt="PaceGuard"></a>
 </p>
 
 A Home Assistant custom integration that brings live GPS positions from
-[Trail-Safe](https://trail-safe.app) onto your Home Assistant map. Each
+[PaceGuard](https://paceguard.io) onto your Home Assistant map. Each
 family member appears as a `device_tracker` entity with real-time
 coordinates, accuracy, online state, and SOS alerts.
 
 <!-- TODO: capture from a live Home Assistant instance, then uncomment.
 <p align="center">
-  <img src="images/map-preview.png" alt="Trail-Safe trackers on the Home Assistant map" width="700">
+  <img src="images/map-preview.png" alt="PaceGuard trackers on the Home Assistant map" width="700">
 </p>
 -->
 
@@ -28,7 +28,9 @@ coordinates, accuracy, online state, and SOS alerts.
 - GPS coordinates with accuracy circle on the HA map
 - Online/offline state with automatic icon changes
 - SOS alert detection (icon switches to `mdi:alert`)
-- Avatar support via `entity_picture`
+- Asks for a new API key when the old one is revoked (no reinstall needed)
+- Repair notice when the account's plan no longer includes the API
+- Trackers of removed devices go unavailable and are cleaned up after 24h
 - 30-second polling interval
 - Config flow UI (no YAML needed)
 
@@ -36,8 +38,8 @@ coordinates, accuracy, online state, and SOS alerts.
 
 | Requirement      | Value                                    |
 |------------------|------------------------------------------|
-| Home Assistant   | 2024.1.0 or later                        |
-| Trail-Safe plan   | Single or Family (Free is not supported) |
+| Home Assistant   | 2024.11.0 or later                       |
+| PaceGuard plan   | Single or Family (Free is not supported) |
 | HACS             | Installed and running                    |
 
 ## Installation
@@ -47,7 +49,7 @@ coordinates, accuracy, online state, and SOS alerts.
 1. Open **HACS** in your Home Assistant.
 2. Go to **Integrations**.
 3. Click **Explore & Download Repositories**.
-4. Search for **Trail-Safe GPS Tracker**.
+4. Search for **PaceGuard GPS Tracker**.
 5. Click **Download**.
 6. Restart Home Assistant.
 
@@ -62,7 +64,7 @@ coordinates, accuracy, online state, and SOS alerts.
 
 ### 1. Create an API key
 
-1. Sign in to the [Trail-Safe dashboard](https://trail-safe.app).
+1. Sign in to the [PaceGuard dashboard](https://paceguard.io).
 2. Switch to the **Integrations** tab (requires a paid plan).
 3. Click **Create key**, give it a name, and copy the token.
 4. The token starts with `ts_` and is shown only once.
@@ -70,21 +72,21 @@ coordinates, accuracy, online state, and SOS alerts.
 ### 2. Add the integration
 
 1. In Home Assistant, go to **Settings > Devices & Services**.
-2. Click **Add Integration** and search for **Trail-Safe**.
-3. Enter your **Server URL** (e.g. `https://trail-safe.app`).
+2. Click **Add Integration** and search for **PaceGuard**.
+3. Enter your **Server URL** (e.g. `https://paceguard.io`).
 4. Paste your **API Key**.
 5. Click **Submit** — the integration validates the key and shows your
    plan and member count.
 
 <!-- TODO: capture from a live Home Assistant instance, then uncomment.
 <p align="center">
-  <img src="images/config-flow.png" alt="Trail-Safe integration setup dialog" width="450">
+  <img src="images/config-flow.png" alt="PaceGuard integration setup dialog" width="450">
 </p>
 -->
 
 ## Entities
 
-A `device_tracker` entity is created **per device**. Because a Trail-Safe
+A `device_tracker` entity is created **per device**. Because a PaceGuard
 member can carry several devices (a Family plan covers up to four devices,
 which may all belong to one person), every device gets its own tracker.
 All of a member's devices are grouped under a single Home Assistant device
@@ -103,9 +105,9 @@ device_tracker.trailsafe_<account>_<device>
 ```
 
 For example `device_tracker.trailsafe_sander_ultra_1`. The `<account>`
-part is your Trail-Safe display name with any email domain stripped, and
-`<device>` is the device's friendly name from Trail-Safe (the per-user
-fallback tracker omits the device part). Rename a device in the Trail-Safe
+part is your PaceGuard display name with any email domain stripped, and
+`<device>` is the device's friendly name from PaceGuard (the per-user
+fallback tracker omits the device part). Rename a device in the PaceGuard
 app to change the `<device>` part — for example, rename a watch that
 reports a raw model code like `L705F` to something friendly.
 
@@ -123,7 +125,6 @@ Each entity exposes:
 | `gps_accuracy`     | Accuracy in meters                               |
 | `source_type`      | Always `gps`                                     |
 | `icon`             | `mdi:walk` (online), `mdi:account-clock` (offline), `mdi:alert` (SOS) |
-| `entity_picture`   | Avatar URL (if uploaded in Trail-Safe)            |
 
 ### Extra state attributes
 
@@ -131,7 +132,7 @@ Each entity exposes:
 |----------------|---------|---------------------------------------------|
 | `user_sub`     | string  | Google account subject identifier of the owner |
 | `device_id`    | string  | Identifier of this specific device (per-device trackers only) |
-| `device_name`  | string  | This device's name from Trail-Safe           |
+| `device_name`  | string  | This device's name from PaceGuard           |
 | `online`       | boolean | True when this device has an active connection |
 | `sos`          | boolean | True when the owner is signalling SOS       |
 | `recorded_at`  | integer | Unix milliseconds of the last GPS fix       |
@@ -152,13 +153,13 @@ automatically — no extra configuration is required.
 ### Default map
 
 The built-in **Map** panel (left sidebar) shows every entity that has a
-location, including your Trail-Safe trackers. Each member appears with an
-accuracy circle and, if an avatar was uploaded in Trail-Safe, their photo
+location, including your PaceGuard trackers. Each member appears with an
+accuracy circle and, if an avatar was uploaded in PaceGuard, their photo
 as the marker.
 
 <!-- TODO: capture from a live Home Assistant instance, then uncomment.
 <p align="center">
-  <img src="images/map-card.png" alt="Trail-Safe map card on a dashboard" width="700">
+  <img src="images/map-card.png" alt="PaceGuard map card on a dashboard" width="700">
 </p>
 -->
 
@@ -168,7 +169,7 @@ To add the trackers to a specific dashboard:
 
 1. Open the dashboard and click **Edit Dashboard** (top-right).
 2. Click **+ Add Card** and choose **Map**.
-3. Under **Entities**, add your Trail-Safe trackers, e.g.
+3. Under **Entities**, add your PaceGuard trackers, e.g.
    `device_tracker.trailsafe_sander_ultra_1`.
 4. Click **Save**.
 
@@ -176,7 +177,7 @@ Or paste the YAML directly:
 
 ```yaml
 type: map
-title: Trail-Safe
+title: PaceGuard
 default_zoom: 12
 hours_to_show: 6
 entities:
@@ -209,7 +210,7 @@ automation:
     action:
       - service: notify.mobile_app
         data:
-          title: "Trail-Safe"
+          title: "PaceGuard"
           message: >
             {{ state_attr('device_tracker.trailsafe_sander_ultra_1',
                'friendly_name') }} went offline 5 minutes ago.
@@ -228,7 +229,7 @@ automation:
     action:
       - service: notify.all_phones
         data:
-          title: "SOS from Trail-Safe"
+          title: "SOS from PaceGuard"
           message: "Emergency signal received. Check the map."
 ```
 
@@ -238,7 +239,9 @@ automation:
 |---------------------------------|----------------------------------------------|
 | Integration not found in search | Restart HA after installation                |
 | "Invalid API key" during setup  | Re-copy the key; check for trailing spaces   |
-| "Paid plan required"            | Your subscription lapsed; check Billing page |
+| "Paid plan required" (repair)   | Plan lapsed; renew in Billing, updates resume on their own |
+| "Reauthentication required"     | Key revoked; create a new key and paste it in the dialog (trackers and history are kept) |
+| Tracker `unavailable`           | Device left the account (removed, merged, re-linked); it is cleaned up after 24h |
 | Entities show `unknown`         | Watches haven't sent a fix yet; wait for GPS |
 | Stale positions                 | Check watch app connectivity                 |
 
@@ -248,6 +251,21 @@ automation:
   stored.
 - Keys grant **read-only** access to position data only.
 - Revoking a key takes effect immediately.
+
+## Changelog
+
+- **1.2.0**: reauth flow when the API key is revoked (401) and a repair
+  issue when the plan lapses (403), instead of silent failures. Trackers of
+  devices that left the feed go unavailable and are removed after 24h. Two
+  devices with the same name get a short id suffix (new entities only).
+  Shared HTTP session. Current HA APIs (ready for HA 2027.6). Dropped
+  `entity_picture`: the avatar URL needs a login, so it never loaded.
+  Requires HA 2024.11+. Rebranded to **PaceGuard**: the default server is
+  `https://paceguard.io`, and existing entries pointing at `trail-safe.app`
+  are moved there automatically (same accounts and API keys). Entity ids
+  keep their `device_tracker.trailsafe_…` prefix, so dashboards and
+  automations keep working.
+- **1.1.3.1**: readable entity ids `device_tracker.trailsafe_<account>_<device>`.
 
 ## License
 

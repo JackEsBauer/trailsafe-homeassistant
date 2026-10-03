@@ -2,21 +2,35 @@
   "config": {
     "step": {
       "user": {
-        "title": "Connect to Trail-Safe",
-        "description": "Enter your Trail-Safe server URL and API key. You can create an API key in the Trail-Safe dashboard under Integrations.",
+        "title": "Connect to PaceGuard",
+        "description": "Enter your PaceGuard server URL and API key. You can create an API key in the PaceGuard dashboard under Integrations.",
         "data": {
           "server_url": "Server URL",
+          "api_key": "API Key"
+        }
+      },
+      "reauth_confirm": {
+        "title": "PaceGuard API key no longer valid",
+        "description": "The API key for {server_url} was revoked or is invalid. Create a new one in the PaceGuard dashboard under Integrations and paste it here. Your trackers and their history are kept.",
+        "data": {
           "api_key": "API Key"
         }
       }
     },
     "error": {
-      "cannot_connect": "Cannot connect to the Trail-Safe server.",
-      "invalid_auth": "Invalid API key. Generate one in the Trail-Safe dashboard.",
-      "paid_plan_required": "API keys require a paid Trail-Safe plan (Single or Family)."
+      "cannot_connect": "Cannot connect to the PaceGuard server.",
+      "invalid_auth": "Invalid API key. Generate one in the PaceGuard dashboard.",
+      "paid_plan_required": "API keys require a paid PaceGuard plan (Single, Family or Family Plus)."
     },
     "abort": {
-      "already_configured": "This API key is already configured."
+      "already_configured": "This API key is already configured.",
+      "reauth_successful": "The new API key works. PaceGuard is reconnected."
+    }
+  },
+  "issues": {
+    "paid_plan_required": {
+      "title": "PaceGuard: paid plan required",
+      "description": "{title} stopped updating because the PaceGuard account that owns its API key is no longer on a paid plan (Single, Family or Family Plus). Renew the plan in the PaceGuard dashboard; the trackers resume on their own, no change in Home Assistant needed."
     }
   }
 }

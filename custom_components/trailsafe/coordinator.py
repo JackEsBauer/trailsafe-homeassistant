@@ -1,20 +1,28 @@
-"""Data update coordinator for Trailsafe."""
+"""Data update coordinator for PaceGuard."""
+
+from __future__ import annotations
 
 from datetime import timedelta
 import logging
+from typing import TYPE_CHECKING
 
 import aiohttp
 
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.helpers import issue_registry as ir
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import CONF_SERVER_URL, CONF_API_KEY, DOMAIN
+from .const import CONF_API_KEY, CONF_SERVER_URL, DOMAIN, ISSUE_PAID_PLAN
+
+if TYPE_CHECKING:
+    from . import TrailsafeConfigEntry
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class TrailsafeCoordinator(DataUpdateCoordinator):
+class TrailsafeCoordinator(DataUpdateCoordinator[dict[str, dict]]):
     """Polls /api/integration/positions and exposes per-device position data.
 
     The feed returns one entry per device (a user signed in on several
@@ -25,39 +33,64 @@ class TrailsafeCoordinator(DataUpdateCoordinator):
     identity.
     """
 
+    config_entry: TrailsafeConfigEntry
+
     def __init__(
         self,
         hass: HomeAssistant,
-        entry: ConfigEntry,
+        entry: TrailsafeConfigEntry,
         update_interval: timedelta,
     ) -> None:
         super().__init__(
             hass,
             _LOGGER,
+            config_entry=entry,
             name=DOMAIN,
             update_interval=update_interval,
         )
-        self._server_url = entry.data[CONF_SERVER_URL].rstrip("/")
+        self.server_url = entry.data[CONF_SERVER_URL].rstrip("/")
         self._api_key = entry.data[CONF_API_KEY]
+        self._session = async_get_clientsession(hass)
 
-    async def _async_update_data(self) -> dict:
-        url = f"{self._server_url}/api/integration/positions"
+    async def _async_update_data(self) -> dict[str, dict]:
+        url = f"{self.server_url}/api/integration/positions"
         headers = {"Authorization": f"Bearer {self._api_key}"}
+        issue_id = f"{ISSUE_PAID_PLAN}_{self.config_entry.entry_id}"
 
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=15)) as resp:
-                    if resp.status == 401:
-                        raise UpdateFailed("Invalid API key — check your Trail-Safe dashboard")
-                    if resp.status == 403:
-                        raise UpdateFailed("API key requires a paid Trail-Safe plan")
-                    if resp.status != 200:
-                        raise UpdateFailed(f"Server returned {resp.status}")
-                    data = await resp.json()
-        except aiohttp.ClientError as err:
+            async with self._session.get(
+                url, headers=headers, timeout=aiohttp.ClientTimeout(total=15)
+            ) as resp:
+                if resp.status == 401:
+                    # Revoked or invalid key: let Home Assistant ask for a new
+                    # one (reauth flow) instead of failing silently forever.
+                    raise ConfigEntryAuthFailed(
+                        "The PaceGuard API key is no longer valid"
+                    )
+                if resp.status == 403:
+                    # The key is fine but the owner's plan no longer includes
+                    # the API. A new key won't help, so raise a repair issue
+                    # rather than a reauth, and keep retrying (an upgrade
+                    # brings it back without any action in HA).
+                    ir.async_create_issue(
+                        self.hass,
+                        DOMAIN,
+                        issue_id,
+                        is_fixable=False,
+                        severity=ir.IssueSeverity.ERROR,
+                        translation_key=ISSUE_PAID_PLAN,
+                        translation_placeholders={"title": self.config_entry.title},
+                    )
+                    raise UpdateFailed("The PaceGuard plan no longer includes API access")
+                if resp.status != 200:
+                    raise UpdateFailed(f"PaceGuard server returned {resp.status}")
+                data = await resp.json()
+        except (aiohttp.ClientError, TimeoutError) as err:
             raise UpdateFailed(f"Connection error: {err}") from err
 
-        positions = {}
+        ir.async_delete_issue(self.hass, DOMAIN, issue_id)
+
+        positions: dict[str, dict] = {}
         for p in data.get("positions", []):
             sub = p.get("user_sub")
             if not sub:
@@ -86,6 +119,5 @@ class TrailsafeCoordinator(DataUpdateCoordinator):
                 "recorded_at": p.get("recorded_at", 0),
                 "online": p.get("online", False),
                 "sos": p.get("sos", False),
-                "avatar_url": p.get("avatar_url"),
             }
         return positions
