@@ -9,6 +9,7 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 
+from .avatar import TrailsafeAvatarView
 from .const import CONF_SERVER_URL, DEFAULT_SCAN_INTERVAL, DOMAIN
 from .coordinator import TrailsafeCoordinator
 
@@ -47,6 +48,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: TrailsafeConfigEntry) ->
     )
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator
+
+    # One avatar view for all entries (it looks the entry up per request).
+    if not hass.data.get(f"{DOMAIN}_avatar_view"):
+        hass.http.register_view(TrailsafeAvatarView(hass))
+        hass.data[f"{DOMAIN}_avatar_view"] = True
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True

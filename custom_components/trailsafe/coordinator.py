@@ -50,7 +50,7 @@ class TrailsafeCoordinator(DataUpdateCoordinator[dict[str, dict]]):
         )
         self.server_url = entry.data[CONF_SERVER_URL].rstrip("/")
         self._api_key = entry.data[CONF_API_KEY]
-        self._session = async_get_clientsession(hass)
+        self.session = async_get_clientsession(hass)
 
     async def _async_update_data(self) -> dict[str, dict]:
         url = f"{self.server_url}/api/integration/positions"
@@ -58,7 +58,7 @@ class TrailsafeCoordinator(DataUpdateCoordinator[dict[str, dict]]):
         issue_id = f"{ISSUE_PAID_PLAN}_{self.config_entry.entry_id}"
 
         try:
-            async with self._session.get(
+            async with self.session.get(
                 url, headers=headers, timeout=aiohttp.ClientTimeout(total=15)
             ) as resp:
                 if resp.status == 401:
@@ -119,5 +119,6 @@ class TrailsafeCoordinator(DataUpdateCoordinator[dict[str, dict]]):
                 "recorded_at": p.get("recorded_at", 0),
                 "online": p.get("online", False),
                 "sos": p.get("sos", False),
+                "avatar_url": p.get("avatar_url"),
             }
         return positions

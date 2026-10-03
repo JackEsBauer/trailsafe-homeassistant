@@ -32,10 +32,10 @@ accuracy, recorded_at (ms), online, sos, avatar_url`.
 - A device can disappear from the feed (removed, merged into another device,
   re-linked with a new id). Its entity must go **unavailable**, not freeze on
   the last fix, and the user must be able to delete it.
-- `avatar_url` (`/api/users/{sub}/avatar`) currently needs a **JWT**, so it
-  answers 401 with an API key, and the browser can't load it either. Don't
-  set `entity_picture` until the backend accepts the API key there (open
-  backend item).
+- `avatar_url` (`/api/users/{sub}/avatar`) accepts the API key as a Bearer
+  header (backend MR !65), never in the query. The browser must never get
+  the key: `entity_picture` is a signed HA path to `avatar.py`'s view,
+  which fetches the image server-side. Keep it that way.
 
 ## Rules
 - **Never change `unique_id`s** (`trailsafe_<device_id or user_sub>`) or the
@@ -93,7 +93,6 @@ Check all of these:
    **Ask the user before pushing to GitHub**: it is public.
 
 ## Known open items
-- Avatars: the backend should accept the integration API key on the avatar
-  route, or the integration should proxy the avatar.
+- Avatars: done in 1.3.0 (backend accepts the API key on the avatar routes, backend MR !65; HA proxies them via avatar.py with signed paths).
 - Possible extra entities: battery / speed / online as sensors, if the feed
   starts carrying them (the backend has them per frame, but not in this feed).
