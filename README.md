@@ -28,7 +28,9 @@ coordinates, accuracy, online state, and SOS alerts.
 - GPS coordinates with accuracy circle on the HA map
 - Online/offline state with automatic icon changes
 - SOS alert detection (icon switches to `mdi:alert`)
-- Avatar support via `entity_picture`
+- Asks for a new API key when the old one is revoked (no reinstall needed)
+- Repair notice when the account's plan no longer includes the API
+- Trackers of removed devices go unavailable and are cleaned up after 24h
 - 30-second polling interval
 - Config flow UI (no YAML needed)
 
@@ -36,7 +38,7 @@ coordinates, accuracy, online state, and SOS alerts.
 
 | Requirement      | Value                                    |
 |------------------|------------------------------------------|
-| Home Assistant   | 2024.1.0 or later                        |
+| Home Assistant   | 2024.11.0 or later                       |
 | Trail-Safe plan   | Single or Family (Free is not supported) |
 | HACS             | Installed and running                    |
 
@@ -123,7 +125,6 @@ Each entity exposes:
 | `gps_accuracy`     | Accuracy in meters                               |
 | `source_type`      | Always `gps`                                     |
 | `icon`             | `mdi:walk` (online), `mdi:account-clock` (offline), `mdi:alert` (SOS) |
-| `entity_picture`   | Avatar URL (if uploaded in Trail-Safe)            |
 
 ### Extra state attributes
 
@@ -238,7 +239,9 @@ automation:
 |---------------------------------|----------------------------------------------|
 | Integration not found in search | Restart HA after installation                |
 | "Invalid API key" during setup  | Re-copy the key; check for trailing spaces   |
-| "Paid plan required"            | Your subscription lapsed; check Billing page |
+| "Paid plan required" (repair)   | Plan lapsed; renew in Billing, updates resume on their own |
+| "Reauthentication required"     | Key revoked; create a new key and paste it in the dialog (trackers and history are kept) |
+| Tracker `unavailable`           | Device left the account (removed, merged, re-linked); it is cleaned up after 24h |
 | Entities show `unknown`         | Watches haven't sent a fix yet; wait for GPS |
 | Stale positions                 | Check watch app connectivity                 |
 
@@ -248,6 +251,17 @@ automation:
   stored.
 - Keys grant **read-only** access to position data only.
 - Revoking a key takes effect immediately.
+
+## Changelog
+
+- **1.2.0**: reauth flow when the API key is revoked (401) and a repair
+  issue when the plan lapses (403), instead of silent failures. Trackers of
+  devices that left the feed go unavailable and are removed after 24h. Two
+  devices with the same name get a short id suffix (new entities only).
+  Shared HTTP session. Current HA APIs (ready for HA 2027.6). Dropped
+  `entity_picture`: the avatar URL needs a login, so it never loaded.
+  Requires HA 2024.11+.
+- **1.1.3.1**: readable entity ids `device_tracker.trailsafe_<account>_<device>`.
 
 ## License
 
